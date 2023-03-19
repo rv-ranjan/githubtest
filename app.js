@@ -3,6 +3,19 @@ var app = new express();
 const http = require('http');
 const swagger = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const mongoose = require("mongoose");
+const { json } = require('body-parser');
+mongoose.connect("mongodb://0.0.0.0:27017/studentData", {
+   useNewUrlParser: true,
+   useUnifiedTopology: true
+});
+const studentSchema = {
+    'Id': Number,
+        'Name': String,
+        'Stream': String,
+        'Gender': String
+};
+var studentInstance = mongoose.model("studentData", studentSchema);
 const options = {
     definition: swagger.Options = {
         openapi: '3.0.0',
@@ -120,13 +133,27 @@ app.post('/submitDetails', (req, res) => {
     myDbObj.Stream = Stream;
     myDbObj.Gender = Gender;
     let myDb;
-    myDb.save(myDbObj, (resp, error) => {
-        if (error) {
+    const student = new studentInstance({
+        Id:objReq.Id,
+        Name:objReq.Name,
+        Stream:objReq.Stream,
+        Gender:objReq.Gender
+    });
+    student.save(function(err,data){
+        if(err){
 
-        } else {
-
+        } else{
+            console.log('Success',data);
+            res.json({'Msg':'Data  saved Success'})
         }
     })
+    // myDb.save(myDbObj, (resp, error) => {
+    //     if (error) {
+
+    //     } else {
+
+    //     }
+    // })
 });
 
 /**
@@ -141,11 +168,33 @@ app.post('/submitDetails', (req, res) => {
  */
 
 app.get('/showStudent/:id?/:name?',(req,res)=>{
+let sId = req.params.id;
+let dbObj={};
+if(sId){
+     dbObj ={
+        'Id':sId
+    }
+} else{
+    dbObj = {}
+}
+studentInstance.find(dbObj, (err,response)=>{
+if(err){
 
+} else{
+    if(response.length> 0){
+    console.log('Success',response);
+    res.json({'Msg':'Success','data':JSON.stringify(response)});
+    } else{
+        
+    console.log('Success','no data found');
+    res.json({'Msg':'Success','data':'no data found'});
+    }
+}
+})
 })
 
 app.listen(4000, () => {
-    console.log('running on port 3000');
+    console.log('running on port 4000');
 });
 
 module.export = app;
