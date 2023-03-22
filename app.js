@@ -114,7 +114,7 @@ app.get('/getRtoData', (req, res) => {
  *              description:to test get Method
  */
 
-app.post('/submitDetails', (req, res) => {
+app.post('/student/post', (req, res) => {
     let objReq = req.body;
     let myDbObj = {
         'Id': Number,
@@ -167,7 +167,7 @@ app.post('/submitDetails', (req, res) => {
  *              description:to test get Method
  */
 
-app.get('/showStudent/:id?/:name?',(req,res)=>{
+app.get('/student/get/:id?/:name?',(req,res)=>{
 let sId = req.params.id;
 let dbObj={};
 if(sId){
@@ -191,6 +191,11 @@ if(err){
     }
 }
 })
+});
+
+app.update('/student/update/:id?',(req,res)=>{
+    let sId = req.params.id;
+    
 })
 
 app.listen(4000, () => {
